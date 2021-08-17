@@ -1,6 +1,7 @@
 <template>
   <svg id="generated-svg">
     <title>{{title}}</title>
+    <path v-for="path in paths" v-bind="path"/>
   </svg>
 </template>
 
@@ -10,12 +11,15 @@ import rough from 'roughjs/bundled/rough.cjs.js';
 
 export default {
   props: ['title', 'nb', 'color'],
-  mounted() {
-    let svg = document.getElementById('generated-svg')
-    const rc = rough.svg(svg);
-    for (let i = 0; i < this.nb; i++) {
-      let node = rc.rectangle(100 * (i), 10, 80, 80, { fill: this.color });
-      svg.appendChild(node);
+  computed: {
+    paths() {
+      let generator = rough.generator();
+      let paths = []
+      for (let i = 0; i < this.nb; i++) {
+        let rectangle = generator.rectangle(100 * i, 10, 80, 80, {fill: this.color});
+        paths.push(generator.toPaths(rectangle))
+      }
+      return paths.flat()
     }
   }
 }
